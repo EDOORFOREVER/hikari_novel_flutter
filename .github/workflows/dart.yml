@@ -1,45 +1,3 @@
-# 此工作流使用了未经 GitHub 认证的操作。
-# 它们由第三方提供，并受
-# 独立的服务条款、隐私政策及支持政策约束
-# 文档。
-
-名称: Dart
-
-在:
-  推送:
-    分支: [ "main" ]
-  拉取请求:
-    分支: [ "main" ]
-
-作业:
- 构建:
-    运行平台: ubuntu-latest
-
-    步骤:
-      - 使用: actions/checkout@v4
-
-      # 注意：此工作流使用 Dart SDK 的最新稳定版本。
-      # 如有需要，您也可以指定其他版本，请参阅此处的文档：
-      # https://github.com/dart-lang/setup-dart/blob/main/README.md
-      # - 使用：dart-lang/setup-dart@v1
-      - 使用: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
-
-      - 名称: 安装依赖项
-        运行: dart pub get
-
-      # 取消注释此步骤，以验证每次提交时都使用了 'dart format'。
-      # - 名称：验证格式
-      #   运行：dart format --output=none --set-exit-if-changed .
-
-      # 建议添加 '--fatal-infos' 以进行更严格的分析。
-      - 名称: 分析项目源代码
-        运行: dart analyze
-
-      # 您的项目需要在 test/ 目录下包含测试，并且需要依赖
-      # package:test，这样这一步才能成功。请注意，Flutter 项目会
-      # 建议将其改为 'flutter test'。
-      - 名称: 运行测试
-        run: dart test
 name: Flutter Build APK
 on:
   push:
@@ -52,23 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 配置Pub国内镜像
+      - name: 配置国内镜像加速
         run: |
           echo "PUB_HOSTED_URL=https://pub.flutter-io.cn" >> $GITHUB_ENV
           echo "FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn" >> $GITHUB_ENV
 
-      - name: Setup Flutter
+      - name: 安装Flutter环境
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
 
-      - name: 清理编译缓存
+      - name: 清理旧缓存
         run: flutter clean
 
-      - name: 安装项目依赖
+      - name: 下载项目依赖
         run: flutter pub get
 
-      - name: 编译Release APK
+      - name: 编译正式版APK
         run: flutter build apk --release
 
       - name: 上传APK安装包
