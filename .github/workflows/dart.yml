@@ -36,17 +36,17 @@
         运行: dart analyze
 
       # 您的项目需要在 test/ 目录下包含测试，并且需要依赖
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      - name: Run tests
+      # package:test，这样这一步才能成功。请注意，Flutter 项目会
+      # 建议将其改为 'flutter test'。
+      - 名称: 运行测试
         run: dart test
 名称: Flutter 构建 APK
 
 # 触发条件：push到main分支、手动触发工作流
 触发器:
   push:
-    分支: [ 主分支 ]
-  workflow_dispatch:
+ 分支: [ 主分支 ]
+ workflow_dispatch:
 
 作业:
   build:
@@ -59,7 +59,7 @@
       - 名称: 设置 Flutter
         使用: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0' # 替换为你项目对应的Flutter版本
+          flutter-version: '3.19.0' # 替换为你项目对应的Flutter版本
 
       # 3. 安装依赖
       - name: 安装依赖
