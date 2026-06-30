@@ -40,38 +40,39 @@
       # 建议将其改为 'flutter test'。
       - 名称: 运行测试
         run: dart test
-名称: Flutter 构建 APK
-
-# 触发条件：push到main分支、手动触发工作流
-触发器:
+name: Flutter Build APK
+on:
   push:
- 分支: [ 主分支 ]
- workflow_dispatch:
+    branches: [ main ]
+  workflow_dispatch:
 
-作业:
+jobs:
   build:
-    运行环境: ubuntu-latest
-    步骤:
-      # 1. 拉取仓库代码
-      - 使用: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      # 2. 配置Flutter环境
-      - 名称: 设置 Flutter
-        使用: subosito/flutter-action@v2
+      - name: 配置Pub国内镜像
+        run: |
+          echo "PUB_HOSTED_URL=https://pub.flutter-io.cn" >> $GITHUB_ENV
+          echo "FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn" >> $GITHUB_ENV
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0' # 替换为你项目对应的Flutter版本
+          flutter-version: '3.22.0'
 
-      # 3. 安装依赖
-      - name: 安装依赖
-        运行: flutter pub get
+      - name: 清理编译缓存
+        run: flutter clean
 
-      # 4. 编译Release APK
-      - name: 构建发布版APK
-        运行: flutter build apk --release
+      - name: 安装项目依赖
+        run: flutter pub get
 
-      # 5. 上传生成的APK到工件，下载使用
-      - 名称: 上传 APK 构件
-        使用: actions/upload-artifact@v4
+      - name: 编译Release APK
+        run: flutter build apk --release
+
+      - name: 上传APK安装包
+        uses: actions/upload-artifact@v4
         with:
-          名称: release-apk
-          路径: build/app/outputs/flutter-apk/app-release.apk
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
