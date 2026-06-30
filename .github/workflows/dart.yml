@@ -18,7 +18,7 @@ jobs:
       - name: 安装Flutter环境
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.19.0'
 
       - name: 清理旧缓存
         run: flutter clean
