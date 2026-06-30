@@ -1,0 +1,77 @@
+# 此工作流使用了未经 GitHub 认证的操作。
+# 它们由第三方提供，并受
+# 独立的服务条款、隐私政策及支持政策约束
+# 文档。
+
+名称: Dart
+
+在:
+  推送:
+    分支: [ "main" ]
+  拉取请求:
+    分支: [ "main" ]
+
+作业:
+ 构建:
+    运行平台: ubuntu-latest
+
+    步骤:
+      - 使用: actions/checkout@v4
+
+      # 注意：此工作流使用 Dart SDK 的最新稳定版本。
+      # 如有需要，您也可以指定其他版本，请参阅此处的文档：
+      # https://github.com/dart-lang/setup-dart/blob/main/README.md
+      # - 使用：dart-lang/setup-dart@v1
+      - 使用: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+
+      - 名称: 安装依赖项
+        运行: dart pub get
+
+      # 取消注释此步骤，以验证每次提交时都使用了 'dart format'。
+      # - 名称：验证格式
+      #   运行：dart format --output=none --set-exit-if-changed .
+
+      # 建议添加 '--fatal-infos' 以进行更严格的分析。
+      - 名称: 分析项目源代码
+        运行: dart analyze
+
+      # 您的项目需要在 test/ 目录下包含测试，并且需要依赖
+      # package:test for this step to succeed. Note that Flutter projects will
+      # want to change this to 'flutter test'.
+      - name: Run tests
+        run: dart test
+名称: Flutter 构建 APK
+
+# 触发条件：push到main分支、手动触发工作流
+触发器:
+  push:
+    分支: [ 主分支 ]
+  workflow_dispatch:
+
+作业:
+  build:
+    运行环境: ubuntu-latest
+    步骤:
+      # 1. 拉取仓库代码
+      - 使用: actions/checkout@v4
+
+      # 2. 配置Flutter环境
+      - 名称: 设置 Flutter
+        使用: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0' # 替换为你项目对应的Flutter版本
+
+      # 3. 安装依赖
+      - name: 安装依赖
+        运行: flutter pub get
+
+      # 4. 编译Release APK
+      - name: 构建发布版APK
+        运行: flutter build apk --release
+
+      # 5. 上传生成的APK到工件，下载使用
+      - 名称: 上传 APK 构件
+        使用: actions/upload-artifact@v4
+        with:
+          名称: release-apk
+          路径: build/app/outputs/flutter-apk/app-release.apk
